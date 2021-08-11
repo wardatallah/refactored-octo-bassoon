@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__."/../models/Player.php";
 /*
     Development Exercise
 
@@ -21,7 +22,6 @@
 interface IReadWritePlayers {
     function readPlayers($source, $filename = null);
     function writePlayer($source, $player, $filename = null);
-    function display($isCLI, $course, $filename = null);
 }
 
 class PlayersObject implements IReadWritePlayers {
@@ -97,39 +97,14 @@ class PlayersObject implements IReadWritePlayers {
 
 
     function getPlayerDataArray() {
-
         $players = [];
 
-        $jonas = new \stdClass();
-        $jonas->name = 'Jonas Valenciunas';
-        $jonas->age = 26;
-        $jonas->job = 'Center';
-        $jonas->salary = '4.66m';
-        $players[] = $jonas;
-
-        $kyle = new \stdClass();
-        $kyle->name = 'Kyle Lowry';
-        $kyle->age = 32;
-        $kyle->job = 'Point Guard';
-        $kyle->salary = '28.7m';
-        $players[] = $kyle;
-
-        $demar = new \stdClass();
-        $demar->name = 'Demar DeRozan';
-        $demar->age = 28;
-        $demar->job = 'Shooting Guard';
-        $demar->salary = '26.54m';
-        $players[] = $demar;
-
-        $jakob = new \stdClass();
-        $jakob->name = 'Jakob Poeltl';
-        $jakob->age = 22;
-        $jakob->job = 'Center';
-        $jakob->salary = '2.704m';
-        $players[] = $jakob;
-
+        $players[] = new Player('Jonas Valenciunas', 26, 'Center', '4.66m');
+        $players[] = new Player('Kyle Lowry', 32, 'Point Guard', '28.7m');
+        $players[] = new Player('Demar DeRozan', 28, 'Shooting Guard', '26.54m');
+        $players[] = new Player('Jakob Poeltl', 22, 'Center', '2.704m');
+        
         return $players;
-
     }
 
     function getPlayerDataJson() {
@@ -141,61 +116,6 @@ class PlayersObject implements IReadWritePlayers {
         $file = file_get_contents($filename);
         return $file;
     }
-
-    function display($isCLI, $source, $filename = null) {
-
-        $players = $this->readPlayers($source, $filename);
-
-        if ($isCLI) {
-            echo "Current Players: \n";
-            foreach ($players as $player) {
-
-                echo "\tName: $player->name\n";
-                echo "\tAge: $player->age\n";
-                echo "\tSalary: $player->salary\n";
-                echo "\tJob: $player->job\n\n";
-            }
-        } else {
-
-            ?>
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    li {
-                        list-style-type: none;
-                        margin-bottom: 1em;
-                    }
-                    span {
-                        display: block;
-                    }
-                </style>
-            </head>
-            <body>
-            <div>
-                <span class="title">Current Players</span>
-                <ul>
-                    <?php foreach($players as $player) { ?>
-                        <li>
-                            <div>
-                                <span class="player-name">Name: <?= $player->name ?></span>
-                                <span class="player-age">Age: <?= $player->age ?></span>
-                                <span class="player-salary">Salary: <?= $player->salary ?></span>
-                                <span class="player-job">Job: <?= $player->job ?></span>
-                            </div>
-                        </li>
-                    <?php } ?>
-                </ul>
-            </body>
-            </html>
-            <?php
-        }
-    }
-
 }
-
-$playersObject = new PlayersObject();
-
-$playersObject->display(php_sapi_name() === 'cli', 'array');
 
 ?>
