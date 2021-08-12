@@ -1,27 +1,12 @@
 <?php
 
 require_once __DIR__."/../models/Player.php";
-/*
-    Development Exercise
-
-      The following code is poorly designed and error prone. Refactor the objects below to follow a more SOLID design.
-      Keep in mind the fundamentals of MVVM/MVC and Single-responsibility when refactoring.
-
-      Further, the refactored code should be flexible enough to easily allow the addition of different display
-        methods, as well as additional read and write methods.
-
-      Feel free to add as many additional classes and interfaces as you see fit.
-
-      Note: Please create a fork of the https://github.com/BrandonLegault/exercise repository and commit your changes
-        to your fork. The goal here is not 100% correctness, but instead a glimpse into how you
-        approach refactoring/redesigning bad code. Commit often to your fork.
-
-*/
-
+require_once __DIR__."/../templates/index.php";
 
 interface IReadWritePlayers {
     function readPlayers($source, $filename = null);
     function writePlayer($source, $player, $filename = null);
+    function display();
 }
 
 class PlayersObject implements IReadWritePlayers {
@@ -29,6 +14,8 @@ class PlayersObject implements IReadWritePlayers {
     private $playersArray;
 
     private $playerJsonString;
+
+    private $PlayersTemplate = __DIR__."/../templates/PlayersTemplate.php";
 
     public function __construct() {
         //We're only using this if we're storing players as an array.
@@ -54,7 +41,7 @@ class PlayersObject implements IReadWritePlayers {
                 $playerData = $this->getPlayerDataJson();
                 break;
             case 'file':
-                $playerData = $this->getPlayerDataFromFile($filename);
+                $playerData = file_get_contents($filename);
                 break;
         }
 
@@ -62,7 +49,7 @@ class PlayersObject implements IReadWritePlayers {
             $playerData = json_decode($playerData);
         }
 
-        return $playerData;
+        $this->playersArray = $playerData;
 
     }
 
@@ -85,7 +72,7 @@ class PlayersObject implements IReadWritePlayers {
                 $this->playerJsonString = json_encode($player);
                 break;
             case 'file':
-                $players = json_decode($this->getPlayerDataFromFile($filename));
+                $players = json_decode(file_get_contents($filename));
                 if (!$players) {
                     $players = [];
                 }
@@ -112,9 +99,9 @@ class PlayersObject implements IReadWritePlayers {
         return $json;
     }
 
-    function getPlayerDataFromFile($filename) {
-        $file = file_get_contents($filename);
-        return $file;
+    function display() {
+        $rows = array('players' => $this->playersArray);
+        return template($this->PlayersTemplate, $rows);
     }
 }
 
