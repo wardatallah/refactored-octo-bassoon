@@ -1,35 +1,37 @@
 <?php
+require_once __DIR__."/BaseView.php";
+require_once __DIR__."/../controllers/PlayersController.php";
+require_once __DIR__."/../templates/index.php";
 
-require_once __DIR__."/../controllers/PlayersObject.php";
+class PlayersView implements BaseView {
+    private $controller;
 
-$isCLI = php_sapi_name() === 'cli';
-
-$playersObject = new PlayersObject();
-
-$filename = __DIR__."/../data/playerdata.json";
-
-$playersObject->readPlayers('array', $filename);
-
-if ($isCLI) {
-    echo "Current Players: \n";
-    foreach ($players as $player) {
-
-        echo "\tName: $player->name\n";
-        echo "\tAge: $player->age\n";
-        echo "\tSalary: $player->salary\n";
-        echo "\tJob: $player->job\n\n";
+    public function __construct() {
+        $this->controller = new PlayersController();
     }
-} else {
 
-    ?>
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <link rel="stylesheet" href="../assets/PlayersView.css">
-    </head>
-    <body>
-        <?php echo $playersObject->display(); ?>
-    </body>
-    </html>
+    public function css() {
+        return [
+            'PlayersView.css'
+        ];
+    }
 
- <?php } ?>
+    public function template() {
+        return __DIR__."/../templates/PlayersTemplate.php";
+    }
+
+    public function cli() {
+        echo "Current Players: \n";
+        foreach ($this->controller->getData() as $player) {
+            echo "\tName: $player->name\n";
+            echo "\tAge: $player->age\n";
+            echo "\tSalary: $player->salary\n";
+            echo "\tJob: $player->job\n\n";
+        }
+    }
+
+    public function render() {
+        $rows = array('players' => $this->controller->getData());
+        printf(template($this->template(), $rows));
+     }
+}

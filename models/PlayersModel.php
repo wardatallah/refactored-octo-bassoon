@@ -1,25 +1,20 @@
 <?php
 
 require_once __DIR__."/../models/Player.php";
-require_once __DIR__."/../templates/index.php";
 
 interface IReadWritePlayers {
     function readPlayers($source, $filename = null);
     function writePlayer($source, $player, $filename = null);
-    function display();
 }
 
-class PlayersObject implements IReadWritePlayers {
-
-    private $playersArray;
+class PlayersModel {
+	private $players;
 
     private $playerJsonString;
 
-    private $PlayersTemplate = __DIR__."/../templates/PlayersTemplate.php";
-
     public function __construct() {
         //We're only using this if we're storing players as an array.
-        $this->playersArray = [];
+        $this->players = [];
 
         //We'll only use this one if we're storing players as a JSON string
         $this->playerJsonString = null;
@@ -49,7 +44,7 @@ class PlayersObject implements IReadWritePlayers {
             $playerData = json_decode($playerData);
         }
 
-        $this->playersArray = $playerData;
+        $this->players = $playerData;
 
     }
 
@@ -61,7 +56,7 @@ class PlayersObject implements IReadWritePlayers {
     function writePlayer($source, $player, $filename = null) {
         switch ($source) {
             case 'array':
-                $this->playersArray[] = $player;
+                $this->players[] = $player;
                 break;
             case 'json':
                 $players = [];
@@ -82,6 +77,10 @@ class PlayersObject implements IReadWritePlayers {
         }
     }
 
+    public function getPlayers() {
+    	return $this->players;
+    }
+
 
     function getPlayerDataArray() {
         $players = [];
@@ -98,11 +97,4 @@ class PlayersObject implements IReadWritePlayers {
         $json = '[{"name":"Jonas Valenciunas","age":26,"job":"Center","salary":"4.66m"},{"name":"Kyle Lowry","age":32,"job":"Point Guard","salary":"28.7m"},{"name":"Demar DeRozan","age":28,"job":"Shooting Guard","salary":"26.54m"},{"name":"Jakob Poeltl","age":22,"job":"Center","salary":"2.704m"}]';
         return $json;
     }
-
-    function display() {
-        $rows = array('players' => $this->playersArray);
-        return template($this->PlayersTemplate, $rows);
-    }
 }
-
-?>
