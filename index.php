@@ -1,13 +1,20 @@
 <?php
+$isHome = true;
+$value = $_GET["view"];
+if (file_exists('./views/'.$value.'View.php')) {
+	require_once './views/'.$value.'View.php';
+	$view = new PlayersView();
+	$isHome = false;
+} else {
+	require_once './views/LandingView.php';
+	$view = new LandingView();
+}
 
-require_once './views/PlayersView.php';
-$view = new PlayersView();
 $isCLI = php_sapi_name() === 'cli';
 
 if ($isCLI) {
 	$view->cli();
 } else {
-
 ?>
 	<!DOCTYPE html>
 	<html>
@@ -23,8 +30,14 @@ if ($isCLI) {
 		?>
 	</head>
 	<body>
-	    <?php $view->render(); ?>
+		<?php if(!$isHome) { ?>
+			<a href="/">Home</a><hr />
+	    <?php }
+	    	$view->render();
+	    ?>
 	</body>
 	</html>
 <?php 
 }
+
+

@@ -4,21 +4,17 @@ require_once __DIR__."/../models/Player.php";
 
 interface IReadWritePlayers {
     function readPlayers($source, $filename = null);
-    function writePlayer($source, $player, $filename = null);
+    function writePlayers($filename = null);
 }
 
 class PlayersModel {
-	private $players;
+	/* $players variable will be used to store the data
+	 * it doesn't matter where the data is coming from
+	 * it will be stored in $players variable
+	 */ 
+	private $players = [];
 
-    private $playerJsonString;
-
-    public function __construct() {
-        //We're only using this if we're storing players as an array.
-        $this->players = [];
-
-        //We'll only use this one if we're storing players as a JSON string
-        $this->playerJsonString = null;
-    }
+    public function __construct() {}
 
     /**
      * @param $source string Where we're retrieving the data from. 'json', 'array' or 'file'
@@ -49,38 +45,25 @@ class PlayersModel {
     }
 
     /**
-     * @param $source string Where to write the data. 'json', 'array' or 'file'
      * @param $filename string Only used if we're writing in 'file' mode
-     * @param $player \stdClass Class implementation of the player with name, age, job, salary.
      */
-    function writePlayer($source, $player, $filename = null) {
-        switch ($source) {
-            case 'array':
-                $this->players[] = $player;
-                break;
-            case 'json':
-                $players = [];
-                if ($this->playerJsonString) {
-                    $players = json_decode($this->playerJsonString);
-                }
-                $players[] = $player;
-                $this->playerJsonString = json_encode($player);
-                break;
-            case 'file':
-                $players = json_decode(file_get_contents($filename));
-                if (!$players) {
-                    $players = [];
-                }
-                $players[] = $player;
-                file_put_contents($filename, json_encode($players));
-                break;
-        }
+    function writePlayers($filename = null) {
+    	if (file_exists($filename)) {
+    		file_put_contents($filename, $this->toJSON());
+    	}
+    }
+
+    public function addPlayer($player) {
+    	$this->players[] = $player;
+    }
+
+    public function toJSON() {
+    	return json_encode($this->players);
     }
 
     public function getPlayers() {
     	return $this->players;
     }
-
 
     function getPlayerDataArray() {
         $players = [];

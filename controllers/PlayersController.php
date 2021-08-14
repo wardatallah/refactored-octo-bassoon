@@ -14,6 +14,11 @@ class PlayersController {
     public function getData() {
         return $this->model->getPlayers();
     }
+
+    public function addData($data) {
+        $player = json_decode($data);
+        $this->model->addPlayer($player);
+    }
 }
 
 ?>
